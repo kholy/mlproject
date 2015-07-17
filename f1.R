@@ -30,7 +30,7 @@ traindf<-maindf
 #remove ID
 traindf<-traindf[,-1]
 set.seed(1234)
-inTrain<-createDataPartition(y=traindf$classe,p=0.6,list=FALSE)
+inTrain<-createDataPartition(y=traindf$classe,p=0.8,list=FALSE)
 
 
 #nearzerovariancecols<-nearZeroVar(training,foreach=TRUE,allowParallel=TRUE)
@@ -70,14 +70,15 @@ testdf2<-testdf[,-nearzerovariancecols]
 traindf2$classe<-training$classe
 testdf2$classe<-testing$classe
 
-modfit1<-train(classe~.,data=traindf2,preProcess=c("pca","knnImpute"),allowParallel=TRUE)
-modfit2<-train(classe~.,data=traindf2,preProcess=c("ica","knnImpute"),allowParallel=TRUE)
+modfit1<-train(classe~.,data=traindf2,preProcess=c("pca","knnImpute"))
+modfit2<-train(classe~.,data=traindf2,preProcess=c("ica","knnImpute"))
 
 predictions1<-predict(modfit1,traindf2,na.action=na.pass)
 predictions2<-predict(modfit2,traindf2,na.action=na.pass)
 
 nrow(predictions1)
 nrow(predictions2)
+
 confusionMatrix(predictions1,traindf2$classe)
 confusionMatrix(predictions2,traindf2$classe)
 
