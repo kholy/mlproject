@@ -59,21 +59,34 @@ testing<-traindf[-inTrain,]
 
 numeric_columns<-sapply(training,is.numeric)
 
-tdf<-traindf[,numeric_columns]
+traindf<-training[,numeric_columns]
 testdf<-testing[,numeric_columns]
 
-nearzerovariancecols<-nearZeroVar(tdf)
-traindf2<-tdf[,-nearzerovariancecols]
+nearzerovariancecols<-nearZeroVar(traindf)
+traindf2<-traindf[,-nearzerovariancecols]
 testdf2<-testdf[,-nearzerovariancecols]
 
 
-tdf$classe<-training$classe
+traindf2$classe<-training$classe
 testdf2$classe<-testing$classe
 
-modfit1<-train(classe~.,data=tdf,preProcess="pca",allowParallel=TRUE)
-modfit2<-train(classe~.,data=tdf,allowParallel=TRUE)
+modfit1<-train(classe~.,data=traindf2,preProcess=c("pca","knnImpute"),allowParallel=TRUE)
+modfit2<-train(classe~.,data=traindf2,preProcess=c("ica","knnImpute"),allowParallel=TRUE)
 
-predictions1<-predict(modfit1,)
+predictions1<-predict(modfit1,traindf2,na.action=na.pass)
+predictions2<-predict(modfit2,traindf2,na.action=na.pass)
+
+nrow(predictions1)
+nrow(predictions2)
+confusionMatrix(predictions1,traindf2$classe)
+confusionMatrix(predictions2,traindf2$classe)
+
+
+predictions1<-predict(modfit1,testdf2)
+predictions2<-predict(modfit2,testdf2)
+
+confusionMatrix(predictions1,testdf2$classe)
+confusionMatrix(predictions2,testdf2$classe)
 #preProc <- preProcess(classe~.,traindf,method="pca",thres=.8)
 #numeric_columns<-sapply(traindf,is.numeric)
 #traindf2<-traindf[,numeric_columns]
