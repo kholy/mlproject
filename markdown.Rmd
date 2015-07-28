@@ -1,6 +1,32 @@
+---
+title: "Machine Learning Project"
+output: html_document
+---
+
+
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+```{r, echo=FALSE}
 library('parallel')
 library('RCurl')
-#library('doParallel')
+library(caret)
+library(kernlab);
+
+
+
 training_file<-'pml-training.csv'
 test_file<-'pml-testing.csv'
 
@@ -18,19 +44,6 @@ if(!exists('xURL_testing')) {
   xURL_testing<-getURL(testing_url,ssl.verifypeer=FALSE)
 }
 
-#xURL_testing<-getURL(testing_url,ssl.verifypeer=FALSE)
-# 
-# if(! file.exists(training_file)) {
-#   
-#   download.file(paste(files_url,training_file,sep=""),training_file,method='curl')
-# }
-# 
-# if(! file.exists(test_file)) {
-#   download.file(paste(files_url,test_file,sep=""),test_file,method='curl')
-# }
-
-
-library(caret);library(kernlab);#data(spam)
 if (!exists('maindf')) {
   maindf<-read.csv(textConnection(xURL_training))
 }
@@ -44,13 +57,6 @@ traindf<-traindf[,-1]
 set.seed(1234)
 inTrain<-createDataPartition(y=traindf$classe,p=0.8,list=FALSE)
 
-
-#nearzerovariancecols<-nearZeroVar(training,foreach=TRUE,allowParallel=TRUE)
-
-#colnames(traindf2)
-#preProc <- preProcess(trdata,method="pca",thres=.8)
-#modelFit<-train(classe~.,data=trdata)
-#colnames(trdata)
 summary(traindf)
 summary(testdf)
 names<-colnames(traindf)
@@ -67,6 +73,7 @@ traindf<-traindf[,mycols]
 
 training<-traindf[inTrain,]
 testing<-traindf[-inTrain,]
+
 
 
 numeric_columns<-sapply(training,is.numeric)
@@ -87,6 +94,9 @@ testdf2$classe<-testing$classe
 
 control <- trainControl(method="repeatedcv", number=40, repeats=3)
 
+
+```
+```{r, echo=FALSE,cache=TRUE}
 
 if(!exists('modfit1')) {
   modfit1<-train(classe~.,data=traindf2,preProcess=c("pca","knnImpute"),trControl=control)
@@ -160,20 +170,4 @@ cm7<-confusionMatrix(predictions7,testdf2$classe)
 cm8<-confusionMatrix(predictions8,testdf2$classe)
 cm9<-confusionMatrix(predictions9,testdf2$classe)
 
-trellis.par.set(caretTheme())
-
-#kappas<-c()
-#kappas<-c(kappas,cm1$overall$)
-
-#preProc <- preProcess(classe~.,traindf,method="pca",thres=.8)
-#numeric_columns<-sapply(traindf,is.numeric)
-#traindf2<-traindf[,numeric_columns]
-
-#newtraining<-model.matrix(classe~.,data=training)
-
-#corrMatrix<-cor(traindf)
-#highlyCorrelated<-findCorrelation(corrMatrix,cutoff=0.5)
-#training_final<-traindf[,mycols]
-#modfit<-train(classe~.,method="gbm",data=training,preProcess="pca")
-#preProc <- preProcess(classe~.,training_final,method="pca",thres=.8)
-#names_of_interest<-sort(unique(c(names1,names2,names3)))
+```
