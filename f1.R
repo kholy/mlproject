@@ -76,8 +76,14 @@ modfit2<-train(classe~.,data=traindf2,preProcess=c("ica","knnImpute"))
 predictions1<-predict(modfit1,traindf2,na.action=na.pass)
 predictions2<-predict(modfit2,traindf2,na.action=na.pass)
 
-nrow(predictions1)
-nrow(predictions2)
+predictions3<-predict(modfit1,traindf2)
+predictions4<-predict(modfit1,traindf2)
+
+length(predictions1)
+length(predictions2)
+length(predictions3)
+length(predictions4)
+
 
 confusionMatrix(predictions1,traindf2$classe)
 confusionMatrix(predictions2,traindf2$classe)
